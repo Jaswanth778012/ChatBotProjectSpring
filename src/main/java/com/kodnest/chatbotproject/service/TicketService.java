@@ -1,42 +1,65 @@
 package com.kodnest.chatbotproject.service;
 
+import com.kodnest.chatbotproject.dto.TicketResponse;
 import com.kodnest.chatbotproject.entity.Ticket;
 import com.kodnest.chatbotproject.repository.TicketRepository;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
-@Data
 public class TicketService {
 
-    private TicketRepository repo;
+    private final TicketRepository repo;
 
-    TicketService(TicketRepository repo) {
+    public TicketService(TicketRepository repo) {
         this.repo = repo;
     }
 
-
     @Transactional
     public Ticket createTicket(Ticket ticket) {
+
         return repo.save(ticket);
     }
 
     @Transactional
     public Ticket updateTicket(Ticket ticket) {
+
         return repo.save(ticket);
     }
 
-    public Ticket getTicketById(Long TicketId) {
-        return repo.findTicketById(TicketId).orElse(null);
+    public Ticket getTicketById(Long ticketId) {
+
+        return repo.findTicketById(ticketId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "No ticket found with id: " + ticketId
+                        )
+                );
     }
 
-    public Ticket getTicketByEmailId(String emailId) {
-            return  repo.findByEmail(emailId).orElse(null);
+    public TicketResponse getTicketByEmailId(String emailId) {
+
+        Ticket ticket = repo.findByEmail(emailId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "No ticket found for email: " + emailId
+                        )
+                );
+
+        return new TicketResponse(
+                ticket.getId(),
+                ticket.getSummary(),
+                ticket.getPriority(),
+                ticket.getEmail(),
+                ticket.getDescription(),
+                ticket.getCategory(),
+                ticket.getCreatedOn() != null
+                        ? ticket.getCreatedOn().toString()
+                        : null,
+                ticket.getUpdatedOn() != null
+                        ? ticket.getUpdatedOn().toString()
+                        : null,
+                ticket.getStatus()
+        );
     }
-
-
 }

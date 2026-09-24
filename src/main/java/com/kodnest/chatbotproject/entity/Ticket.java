@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column
     private String summary;
@@ -24,7 +24,7 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
-    @Column(unique = true)
+    @Column
     private String email;
 
     @Column(length = 1000)
